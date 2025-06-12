@@ -1,0 +1,37 @@
+[
+  {
+    "id": "1",
+    "name": "Work Projects",
+    "color": "#6366F1",
+    "icon": "Briefcase",
+    "taskCount": 8
+  },
+  {
+    "id": "2",
+    "name": "Team Management",
+    "color": "#8B5CF6",
+    "icon": "Users",
+    "taskCount": 5
+  },
+  {
+    "id": "3",
+    "name": "Client Relations",
+    "color": "#F59E0B",
+    "icon": "MessageSquare",
+    "taskCount": 3
+  },
+  {
+    "id": "4",
+    "name": "Development",
+    "color": "#10B981",
+    "icon": "Code",
+    "taskCount": 12
+  },
+  {
+    "id": "5",
+    "name": "Finance",
+    "color": "#EF4444",
+    "icon": "DollarSign",
+    "taskCount": 4
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "title": "Complete project proposal",
+    "description": "Finalize the Q4 marketing campaign proposal with budget breakdown and timeline",
+    "categoryId": "1",
+    "priority": "high",
+    "status": "pending",
+    "dueDate": "2024-01-15T09:00:00.000Z",
+    "createdAt": "2024-01-10T10:30:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "2",
+    "title": "Review team performance metrics",
+    "description": "Analyze Q3 performance data and prepare feedback for team members",
+    "categoryId": "2",
+    "priority": "medium",
+    "status": "completed",
+    "dueDate": "2024-01-12T14:00:00.000Z",
+    "createdAt": "2024-01-08T11:15:00.000Z",
+    "completedAt": "2024-01-11T16:45:00.000Z"
+  },
+  {
+    "id": "3",
+    "title": "Schedule client presentation",
+    "description": "Coordinate with the client team for the final product demo next week",
+    "categoryId": "3",
+    "priority": "urgent",
+    "status": "pending",
+    "dueDate": "2024-01-13T10:00:00.000Z",
+    "createdAt": "2024-01-09T09:20:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "4",
+    "title": "Update documentation",
+    "description": "Revise API documentation to reflect recent changes and improvements",
+    "categoryId": "4",
+    "priority": "low",
+    "status": "pending",
+    "dueDate": "2024-01-20T17:00:00.000Z",
+    "createdAt": "2024-01-10T14:22:00.000Z",
+    "completedAt": null
+  },
+  {
+    "id": "5",
+    "title": "Prepare monthly budget report",
+    "description": "Compile expenses and revenue data for December monthly report",
+    "categoryId": "5",
+    "priority": "medium",
+    "status": "completed",
+    "dueDate": "2024-01-11T12:00:00.000Z",
+    "createdAt": "2024-01-05T08:45:00.000Z",
+    "completedAt": "2024-01-10T15:30:00.000Z"
+  }
+]
