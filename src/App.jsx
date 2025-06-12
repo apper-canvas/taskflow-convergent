@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
+import Layout from '@/Layout'
 import Home from '@/components/pages/HomePage'
 import NotFound from '@/components/pages/NotFoundPage'
 import { routeArray } from './config/routes'
-
 function App() {
   return (
     <BrowserRouter>
