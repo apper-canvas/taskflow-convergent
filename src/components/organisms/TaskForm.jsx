@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format } from 'date-fns'
-import ApperIcon from './ApperIcon'
+import PropTypes from 'prop-types'
+import ApperIcon from '@/components/ApperIcon'
+import Button from '@/components/atoms/Button'
+import Input from '@/components/atoms/Input'
+import Textarea from '@/components/atoms/Textarea'
+import Select from '@/components/atoms/Select'
+import FormField from '@/components/molecules/FormField'
 
-const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
+const TaskForm = ({ isOpen, onClose, onSave, task, categories }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -110,6 +116,9 @@ const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             onKeyDown={handleKeyDown}
+            tabIndex="-1"
+            role="dialog"
+            aria-modal="true"
           >
             <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b border-surface-200">
@@ -117,86 +126,49 @@ const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
                   <h2 className="text-2xl font-heading font-semibold text-surface-900">
                     {task ? 'Edit Task' : 'Create New Task'}
                   </h2>
-                  <button
+                  <Button
                     onClick={onClose}
                     className="p-2 text-surface-400 hover:text-surface-600 hover:bg-surface-100 rounded-lg transition-all"
                   >
                     <ApperIcon name="X" size={20} />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                {/* Title Field */}
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-2">
-                    Task Title *
-                  </label>
-                  <input
+                <FormField id="title" label="Task Title *" error={errors.title}>
+                  <Input
+                    id="title"
                     type="text"
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
                     placeholder="Enter task title..."
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${
-                      errors.title 
-                        ? 'border-error focus:border-error focus:ring-error/20' 
-                        : 'border-surface-200 focus:border-primary'
-                    }`}
+                    className={errors.title ? 'border-error focus:border-error focus:ring-error/20' : 'border-surface-200 focus:border-primary'}
                     autoFocus
                   />
-                  {errors.title && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-1 text-sm text-error flex items-center space-x-1"
-                    >
-                      <ApperIcon name="AlertCircle" size={14} />
-                      <span>{errors.title}</span>
-                    </motion.p>
-                  )}
-                </div>
+                </FormField>
 
-                {/* Description Field */}
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
+                <FormField 
+                  id="description" 
+                  label="Description" 
+                  error={errors.description} 
+                  helpText={`${formData.description.length}/500 characters`}
+                >
+                  <Textarea
+                    id="description"
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     placeholder="Add task description..."
-                    rows={4}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none ${
-                      errors.description 
-                        ? 'border-error focus:border-error focus:ring-error/20' 
-                        : 'border-surface-200 focus:border-primary'
-                    }`}
+                    className={errors.description ? 'border-error focus:border-error focus:ring-error/20' : 'border-surface-200 focus:border-primary'}
                   />
-                  {errors.description && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-1 text-sm text-error flex items-center space-x-1"
-                    >
-                      <ApperIcon name="AlertCircle" size={14} />
-                      <span>{errors.description}</span>
-                    </motion.p>
-                  )}
-                  <p className="mt-1 text-xs text-surface-500">
-                    {formData.description.length}/500 characters
-                  </p>
-                </div>
+                </FormField>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Category Field */}
-                  <div>
-                    <label className="block text-sm font-medium text-surface-700 mb-2">
-                      Category
-                    </label>
-                    <select
+                  <FormField id="categoryId" label="Category">
+                    <Select
+                      id="categoryId"
                       value={formData.categoryId}
                       onChange={(e) => handleInputChange('categoryId', e.target.value)}
-                      className="w-full px-4 py-3 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     >
                       <option value="">Select category...</option>
                       {categories.map(category => (
@@ -204,17 +176,14 @@ const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
                           {category.name}
                         </option>
                       ))}
-                    </select>
-                  </div>
+                    </Select>
+                  </FormField>
 
-                  {/* Priority Field */}
                   <div>
-                    <label className="block text-sm font-medium text-surface-700 mb-2">
-                      Priority
-                    </label>
+                    <Label>Priority</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {priorityOptions.map(option => (
-                        <motion.button
+                        <Button
                           key={option.value}
                           type="button"
                           whileHover={{ scale: 1.02 }}
@@ -230,23 +199,20 @@ const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
                             <div className={`w-3 h-3 rounded-full ${option.color}`}></div>
                             <span>{option.label.split(' ')[0]}</span>
                           </div>
-                        </motion.button>
+                        </Button>
                       ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Due Date Field */}
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-2">
-                    Due Date
-                  </label>
+                <FormField id="dueDate" label="Due Date">
                   <div className="relative">
-                    <input
+                    <Input
+                      id="dueDate"
                       type="date"
                       value={formData.dueDate}
                       onChange={(e) => handleInputChange('dueDate', e.target.value)}
-                      className="w-full px-4 py-3 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="pr-10"
                     />
                     <ApperIcon 
                       name="Calendar" 
@@ -254,11 +220,10 @@ const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-surface-400 pointer-events-none" 
                     />
                   </div>
-                </div>
+                </FormField>
 
-                {/* Action Buttons */}
                 <div className="flex justify-end space-x-4 pt-6 border-t border-surface-200">
-                  <motion.button
+                  <Button
                     type="button"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -266,8 +231,8 @@ const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
                     className="px-6 py-3 border border-surface-300 text-surface-700 rounded-lg hover:bg-surface-50 transition-all font-medium"
                   >
                     Cancel
-                  </motion.button>
-                  <motion.button
+                  </Button>
+                  <Button
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -275,7 +240,7 @@ const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
                   >
                     <ApperIcon name={task ? "Save" : "Plus"} size={18} />
                     <span>{task ? 'Update Task' : 'Create Task'}</span>
-                  </motion.button>
+                  </Button>
                 </div>
               </form>
             </div>
@@ -286,4 +251,16 @@ const MainFeature = ({ isOpen, onClose, onSave, task, categories }) => {
   )
 }
 
-export default MainFeature
+TaskForm.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  task: PropTypes.object,
+  categories: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    color: PropTypes.string.isRequired,
+  })).isRequired,
+}
+
+export default TaskForm
