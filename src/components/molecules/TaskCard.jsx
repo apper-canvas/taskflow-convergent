@@ -1,10 +1,25 @@
 import PropTypes from 'prop-types'
 import { motion } from 'framer-motion'
-import { format, isToday, isOverdue, parseISO } from 'date-fns'
+import { format, isToday, parseISO, isBefore } from 'date-fns'
 import ApperIcon from '@/components/ApperIcon'
 import Checkbox from '@/components/atoms/Checkbox'
 import Button from '@/components/atoms/Button'
 import PriorityBadge from '@/components/atoms/PriorityBadge'
+
+// Custom utility function since isOverdue doesn't exist in date-fns
+const isOverdue = (date) => {
+  if (!date) return false
+  try {
+    const targetDate = typeof date === 'string' ? parseISO(date) : date
+    const now = new Date()
+    // Set time to start of day for accurate comparison
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const target = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())
+    return isBefore(target, today)
+  } catch {
+    return false
+  }
+}
 
 const TaskCard = ({
   task,
@@ -14,10 +29,19 @@ const TaskCard = ({
   onDelete,
   onToggleSelect,
   isSelected,
-  index
+index
 }) => {
-  const isTaskOverdue = task.dueDate && isOverdue(parseISO(task.dueDate))
-  const isDueToday = task.dueDate && isToday(parseISO(task.dueDate))
+  // Parse dueDate once and handle potential errors
+  const parsedDueDate = task.dueDate ? (() => {
+    try {
+      return parseISO(task.dueDate)
+    } catch {
+      return null
+    }
+  })() : null
+  
+  const isTaskOverdue = parsedDueDate && isOverdue(parsedDueDate)
+  const isDueToday = parsedDueDate && isToday(parsedDueDate)
 
   return (
     <motion.div
@@ -124,10 +148,10 @@ const TaskCard = ({
             {task.dueDate && (
               <div className={`flex items-center space-x-1 text-xs ${
                 isTaskOverdue ? 'text-error' : isDueToday ? 'text-warning' : 'text-surface-600'
-              }`}>
+}`}>
                 <ApperIcon name="Calendar" size={12} />
                 <span>
-                  {isDueToday ? 'Due today' : format(parseISO(task.dueDate), 'MMM d, yyyy')}
+                  {isDueToday ? 'Due today' : parsedDueDate ? format(parsedDueDate, 'MMM d, yyyy') : 'Invalid date'}
                 </span>
               </div>
             )}
