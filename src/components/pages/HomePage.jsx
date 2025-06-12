@@ -5,7 +5,6 @@ import { taskService, categoryService } from '@/services'
 import TaskHeaderActions from '@/components/organisms/TaskHeaderActions'
 import TaskList from '@/components/organisms/TaskList'
 import TaskForm from '@/components/organisms/TaskForm'
-
 // Utility function for checking if a date is overdue
 function isOverdue(date) {
   if (!date) return false
@@ -24,7 +23,7 @@ const HomePage = () => {
   const [sortBy, setSortBy] = useState('dueDate')
   const [selectedTasks, setSelectedTasks] = useState([])
 
-  const loadData = useCallback(async () => {
+const loadData = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -32,8 +31,30 @@ const HomePage = () => {
         taskService.getAll(),
         categoryService.getAll()
       ])
-      setTasks(tasksResult)
-      setCategories(categoriesResult)
+      
+      // Transform data to match expected format
+      const transformedTasks = tasksResult.map(task => ({
+        id: task.Id?.toString(),
+        title: task.title || task.Name,
+        description: task.description || '',
+        categoryId: task.category_id?.toString(),
+        priority: task.priority || 'medium',
+        status: task.status || 'pending',
+        dueDate: task.due_date,
+        createdAt: task.created_at || task.CreatedOn,
+        completedAt: task.completed_at
+      }))
+      
+      const transformedCategories = categoriesResult.map(category => ({
+        id: category.Id?.toString(),
+        name: category.Name,
+        color: category.color,
+        icon: category.icon,
+        taskCount: category.task_count || 0
+      }))
+      
+      setTasks(transformedTasks)
+      setCategories(transformedCategories)
     } catch (err) {
       setError(err.message || 'Failed to load data')
       toast.error('Failed to load tasks')
@@ -45,7 +66,6 @@ const HomePage = () => {
   useEffect(() => {
     loadData()
   }, [loadData])
-
   const createConfetti = useCallback((taskId) => {
     const taskElement = document.querySelector(`[data-task-id="${taskId}"]`)
     if (!taskElement) return;
@@ -69,18 +89,34 @@ const HomePage = () => {
     }
   }, [])
 
-  const handleTaskComplete = useCallback(async (taskId) => {
+const handleTaskComplete = useCallback(async (taskId) => {
     try {
       const task = tasks.find(t => t.id === taskId)
-      if (!task) return;
-      const updatedTask = await taskService.update(taskId, {
+      if (!task) return
+      
+      const updateData = {
         status: task.status === 'completed' ? 'pending' : 'completed',
         completedAt: task.status === 'completed' ? null : new Date().toISOString()
-      })
+      }
       
-      setTasks(prevTasks => prevTasks.map(t => t.id === taskId ? updatedTask : t))
+      const updatedTask = await taskService.update(taskId, updateData)
       
-      if (updatedTask.status === 'completed') {
+      // Transform response data
+      const transformedTask = {
+        id: updatedTask.Id?.toString(),
+        title: updatedTask.title || updatedTask.Name,
+        description: updatedTask.description || '',
+        categoryId: updatedTask.category_id?.toString(),
+        priority: updatedTask.priority || 'medium',
+        status: updatedTask.status || 'pending',
+        dueDate: updatedTask.due_date,
+        createdAt: updatedTask.created_at || updatedTask.CreatedOn,
+        completedAt: updatedTask.completed_at
+      }
+      
+      setTasks(prevTasks => prevTasks.map(t => t.id === taskId ? transformedTask : t))
+      
+      if (transformedTask.status === 'completed') {
         toast.success('Task completed! 🎉')
         createConfetti(taskId)
       } else {
@@ -95,11 +131,39 @@ const HomePage = () => {
     try {
       if (editingTask) {
         const updated = await taskService.update(editingTask.id, taskData)
-        setTasks(prevTasks => prevTasks.map(t => t.id === editingTask.id ? updated : t))
+        
+        // Transform response data
+        const transformedTask = {
+          id: updated.Id?.toString(),
+          title: updated.title || updated.Name,
+          description: updated.description || '',
+          categoryId: updated.category_id?.toString(),
+          priority: updated.priority || 'medium',
+          status: updated.status || 'pending',
+          dueDate: updated.due_date,
+          createdAt: updated.created_at || updated.CreatedOn,
+          completedAt: updated.completed_at
+        }
+        
+        setTasks(prevTasks => prevTasks.map(t => t.id === editingTask.id ? transformedTask : t))
         toast.success('Task updated successfully')
       } else {
         const newTask = await taskService.create(taskData)
-        setTasks(prevTasks => [...prevTasks, newTask])
+        
+        // Transform response data
+        const transformedTask = {
+          id: newTask.Id?.toString(),
+          title: newTask.title || newTask.Name,
+          description: newTask.description || '',
+          categoryId: newTask.category_id?.toString(),
+          priority: newTask.priority || 'medium',
+          status: newTask.status || 'pending',
+          dueDate: newTask.due_date,
+          createdAt: newTask.created_at || newTask.CreatedOn,
+          completedAt: newTask.completed_at
+        }
+        
+        setTasks(prevTasks => [...prevTasks, transformedTask])
         toast.success('Task created successfully')
       }
       setShowTaskModal(false)

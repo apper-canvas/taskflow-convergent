@@ -10,11 +10,19 @@ const Layout = () => {
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('all')
 
-  useEffect(() => {
+useEffect(() => {
     const loadCategories = async () => {
       try {
         const result = await categoryService.getAll()
-        setCategories(result)
+        // Transform data to match expected format
+        const transformedCategories = result.map(category => ({
+          id: category.Id?.toString(),
+          name: category.Name,
+          color: category.color,
+          icon: category.icon,
+          taskCount: category.task_count || 0
+        }))
+        setCategories(transformedCategories)
       } catch (error) {
         console.error('Failed to load categories:', error)
       }
@@ -141,7 +149,7 @@ const Layout = () => {
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <div
+<div
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: category.color }}
                       ></div>
