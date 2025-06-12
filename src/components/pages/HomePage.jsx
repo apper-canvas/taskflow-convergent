@@ -1,10 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'react-toastify'
-import { isOverdue, isToday, parseISO } from 'date-fns'
+import { isToday, parseISO, isBefore } from 'date-fns'
 import { taskService, categoryService } from '@/services'
 import TaskHeaderActions from '@/components/organisms/TaskHeaderActions'
 import TaskList from '@/components/organisms/TaskList'
 import TaskForm from '@/components/organisms/TaskForm'
+
+// Utility function for checking if a date is overdue
+function isOverdue(date) {
+  if (!date) return false
+  const parsedDate = typeof date === 'string' ? parseISO(date) : date
+  return isBefore(parsedDate, new Date())
+}
 
 const HomePage = () => {
   const [tasks, setTasks] = useState([])
